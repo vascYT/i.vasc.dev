@@ -11,6 +11,7 @@ export default function FileViewer() {
     <>
       <Head>
         <title>{fileName}</title>
+        <meta property="og:type" content="website" />
         <meta
           property="og:image"
           content={`${process.env.NEXT_PUBLIC_S3_PUBLIC_URL}/${fileName}`}
