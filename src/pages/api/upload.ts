@@ -37,6 +37,7 @@ export default async function handler(
       Body: fileData,
       Bucket: process.env.BUCKET_NAME || "",
       Key: fileName,
+      ContentType: file.mimetype,
     })
     .promise();
   res.status(200).json({ success: true, fileName });
