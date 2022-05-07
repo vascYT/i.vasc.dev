@@ -11,21 +11,27 @@ export default function FileViewer() {
     <>
       <Head>
         <title>{fileName}</title>
-        <meta property="og:type" content="website" />
-        <meta
-          property="og:image"
-          content={`${process.env.NEXT_PUBLIC_S3_PUBLIC_URL}/${fileName}`}
-        />
-        <meta name="twitter:card" content="summary_large_image" />
+        {router.isReady && (
+          <>
+            <meta property="og:type" content="website" />
+            <meta
+              property="og:image"
+              content={`${process.env.NEXT_PUBLIC_S3_PUBLIC_URL}/${fileName}`}
+            />
+            <meta name="twitter:card" content="summary_large_image" />
+          </>
+        )}
       </Head>
       <Center h="100vh" w="full" bgColor="gray.900">
         <Box boxShadow="2xl" borderRadius={10} bgColor="gray.800" padding={5}>
-          <Image
-            src={`${process.env.NEXT_PUBLIC_S3_PUBLIC_URL}/${fileName}`}
-            borderRadius={5}
-            alt="Uploaded image"
-            w="full"
-          />
+          {router.isReady && (
+            <Image
+              src={`${process.env.NEXT_PUBLIC_S3_PUBLIC_URL}/${fileName}`}
+              borderRadius={5}
+              alt="Uploaded image"
+              w="full"
+            />
+          )}
           <HStack pt={2} justifyContent="center">
             <Icon as={BiImage} color="white" w={7} h={7} />
             <Text color="white" fontSize="2xl">

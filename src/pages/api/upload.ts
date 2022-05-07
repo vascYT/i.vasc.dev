@@ -38,6 +38,7 @@ export default async function handler(
       Bucket: process.env.BUCKET_NAME || "",
       Key: fileName,
       ContentType: file.mimetype,
+      ACL: "public-read",
     })
     .promise();
   res.status(200).json({ success: true, fileName });
