@@ -22,7 +22,7 @@ export default function FileViewer({
   if (!objects || !objects.Contents || objects.Contents.length == 0) {
     return (
       <Center h="100vh" w="full" bgColor="gray.900">
-        <Heading color="white">No image found</Heading>
+        <Heading color="white">Image not found</Heading>
       </Center>
     );
   }
@@ -58,7 +58,9 @@ export default function FileViewer({
             <HStack>
               <Icon as={MdDateRange} color="white" w={5} h={5} />
               <Text color="white" fontSize="md">
-                {objects.Contents[0].Key}
+                {new Date(
+                  objects.Contents[0].LastModified || ""
+                ).toLocaleString()}
               </Text>
             </HStack>
             <HStack>
