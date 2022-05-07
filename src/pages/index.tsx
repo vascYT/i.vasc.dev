@@ -32,10 +32,9 @@ export default function Home() {
       <Box boxShadow="2xl" borderRadius={10} bgColor="gray.800">
         <FormControl>
           <InputGroup>
-            <InputLeftElement
-              pointerEvents="none"
-              children={<Icon as={BiImage} color="white" />}
-            />
+            <InputLeftElement pointerEvents="none">
+              <Icon as={BiImage} color="white" />
+            </InputLeftElement>
             <input
               type="file"
               accept="image/*"

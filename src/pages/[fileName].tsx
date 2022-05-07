@@ -34,6 +34,7 @@ export default function FileViewer() {
                 src={`${process.env.NEXT_PUBLIC_S3_PUBLIC_URL}/${fileName}`}
                 onError={setFailed.on}
                 borderRadius={5}
+                alt="Uploaded image"
               />
               <HStack pt={2} justifyContent="center">
                 <Icon as={BiImage} color="white" w={7} h={7} />
