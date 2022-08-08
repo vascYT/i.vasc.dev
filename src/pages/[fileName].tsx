@@ -13,6 +13,8 @@ import Head from "next/head";
 import { MdDateRange, MdSdCard } from "react-icons/md";
 import { s3 } from "../util/s3";
 import { formatSize } from "../util/misc";
+import moment from "moment";
+import path from "path";
 
 export default function FileViewer({
   objects,
@@ -30,7 +32,7 @@ export default function FileViewer({
   return (
     <>
       <Head>
-        <title>{objects.Contents[0].Key}</title>
+        <title>{path.basename(objects.Contents[0].Key || "")}</title>
         <>
           <meta property="og:type" content="website" />
           <meta
@@ -58,9 +60,9 @@ export default function FileViewer({
             <HStack>
               <Icon as={MdDateRange} color="white" w={5} h={5} />
               <Text color="white" fontSize="md">
-                {new Date(
-                  objects.Contents[0].LastModified || ""
-                ).toLocaleString()}
+                {moment
+                  .utc(objects.Contents[0].LastModified || "")
+                  .format("MMMM Do YYYY, h:mm:ss a")}
               </Text>
             </HStack>
             <HStack>
@@ -82,7 +84,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   const objects = await s3
     .listObjectsV2({
       Bucket: process.env.BUCKET_NAME || "",
-      Prefix: fileName as string,
+      Prefix: `${process.env.BUCKET_KEY_PREFIX || ""}${fileName as string}`,
       MaxKeys: 1,
     })
     .promise();
