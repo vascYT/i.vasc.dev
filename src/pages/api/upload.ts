@@ -36,7 +36,7 @@ export default async function handler(
     .putObject({
       Body: fileData,
       Bucket: process.env.BUCKET_NAME || "",
-      Key: fileName,
+      Key: `${process.env.BUCKET_KEY_PREFIX || ""}${fileName}`,
       ContentType: file.mimetype,
       ACL: "public-read",
     })
