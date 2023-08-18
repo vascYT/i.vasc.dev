@@ -1,79 +1,52 @@
-import {
-  Box,
-  Center,
-  Heading,
-  HStack,
-  Icon,
-  Image,
-  Text,
-} from "@chakra-ui/react";
-import { ListObjectsV2Output } from "aws-sdk/clients/s3";
 import { GetServerSidePropsContext } from "next";
 import Head from "next/head";
-import { MdDateRange, MdSdCard } from "react-icons/md";
-import { s3 } from "../util/s3";
-import { formatSize } from "../util/misc";
+import { s3 } from "@/lib/s3";
+import { formatSize } from "@/lib/utils";
 import moment from "moment";
 import path from "path";
+import { CalendarDays, HardDrive } from "lucide-react";
+import { ListObjectsV2Command, type _Object } from "@aws-sdk/client-s3";
 
-export default function FileViewer({
-  objects,
-}: {
-  objects: ListObjectsV2Output;
-}) {
-  if (!objects || !objects.Contents || objects.Contents.length == 0) {
-    return (
-      <Center h="100vh" w="full" bgColor="gray.900">
-        <Heading color="white">Image not found</Heading>
-      </Center>
-    );
-  }
-
+interface props {
+  fileObject: _Object;
+}
+export default function FileViewer({ fileObject }: props) {
   return (
     <>
       <Head>
-        <title>{path.basename(objects.Contents[0].Key || "")}</title>
+        <title>{path.basename(fileObject.Key || "")}</title>
         <>
           <meta property="og:type" content="website" />
           <meta
             property="og:image"
-            content={`${process.env.NEXT_PUBLIC_S3_PUBLIC_URL}/${objects.Contents[0].Key}`}
+            content={`${process.env.NEXT_PUBLIC_S3_PUBLIC_URL}/${fileObject.Key}`}
           />
           <meta name="twitter:card" content="summary_large_image" />
         </>
       </Head>
-      <Center h="100vh" w="full" bgColor="gray.900">
-        <Box
-          boxShadow="2xl"
-          borderRadius={10}
-          bgColor="gray.800"
-          padding={5}
-          minWidth={500}
-        >
-          <Image
-            src={`${process.env.NEXT_PUBLIC_S3_PUBLIC_URL}/${objects.Contents[0].Key}`}
-            borderRadius={5}
+      <div className="h-screen w-full flex items-center justify-center">
+        <div className="shadow-2xl rounded-lg bg-gray-900 p-5 min-w-[500px]">
+          <img
+            src={`${process.env.NEXT_PUBLIC_S3_PUBLIC_URL}/${fileObject.Key}`}
             alt="Uploaded image"
-            w="full"
+            className="rounded-md w-full"
           />
-          <HStack pt={2} justifyContent="space-between">
-            <HStack>
-              <Icon as={MdDateRange} color="white" w={5} h={5} />
-              <Text color="white" fontSize="md">
+          <div className="mt-2 flex items-center justify-between">
+            <div className="flex items-center justify-center space-x-2">
+              <CalendarDays className="w-5 h-5 stroke-white" />
+              <p>
                 {moment
-                  .utc(objects.Contents[0].LastModified || "")
+                  .utc(fileObject.LastModified || "")
                   .format("MMMM Do YYYY, h:mm:ss a")}
-              </Text>
-            </HStack>
-            <HStack>
-              <Icon as={MdSdCard} color="white" w={5} h={5} />
-              <Text color="white" fontSize="md">
-                {formatSize(objects.Contents[0].Size || 0)}
-              </Text>
-            </HStack>
-          </HStack>
-        </Box>
-      </Center>
+              </p>
+            </div>
+            <div className="flex items-center justify-center space-x-2">
+              <HardDrive className="w-5 h-5 stroke-white" />
+              <p>{formatSize(fileObject.Size || 0)}</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </>
   );
 }
@@ -81,17 +54,25 @@ export default function FileViewer({
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const { fileName } = context.query;
 
-  const objects = await s3
-    .listObjectsV2({
-      Bucket: process.env.BUCKET_NAME || "",
-      Prefix: `${process.env.BUCKET_KEY_PREFIX || ""}${fileName as string}`,
-      MaxKeys: 1,
-    })
-    .promise();
+  const command = new ListObjectsV2Command({
+    Bucket: process.env.BUCKET_NAME || "",
+    Prefix: `${process.env.BUCKET_KEY_PREFIX || ""}${fileName as string}`,
+    MaxKeys: 1,
+  });
+  const objects = await s3.send(command);
+
+  if (!objects || !objects.Contents || objects.Contents.length === 0) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  }
 
   return {
     props: {
-      objects: JSON.parse(JSON.stringify(objects)),
+      fileObject: JSON.parse(JSON.stringify(objects.Contents[0])),
     },
   };
 }

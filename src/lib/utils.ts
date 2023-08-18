@@ -1,4 +1,11 @@
-export const randomId = (length: number) => {
+import { type ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
+
+export function randomId(length: number) {
   var result = "";
   var characters =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -7,9 +14,9 @@ export const randomId = (length: number) => {
     result += characters.charAt(Math.floor(Math.random() * charactersLength));
   }
   return result;
-};
+}
 
-export const formatSize = (bytes: number, si = false, dp = 1) => {
+export function formatSize(bytes: number, si = false, dp = 1) {
   // https://stackoverflow.com/a/14919494/12282885
   const thresh = si ? 1000 : 1024;
 
@@ -32,4 +39,4 @@ export const formatSize = (bytes: number, si = false, dp = 1) => {
   );
 
   return bytes.toFixed(dp) + " " + units[u];
-};
+}
