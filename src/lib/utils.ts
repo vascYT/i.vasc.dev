@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import axios from "axios";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -39,4 +40,28 @@ export function formatSize(bytes: number, si = false, dp = 1) {
   );
 
   return bytes.toFixed(dp) + " " + units[u];
+}
+
+export async function sendDiscordWebhook(fileName: string) {
+  await axios({
+    url: process.env.DISCORD_WEBHOOK_URL || "",
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    data: {
+      embeds: [
+        {
+          title: "✨ New image uploaded",
+          description: `${process.env.NEXT_PUBLIC_URL}/${fileName}`,
+          image: {
+            url: `${process.env.NEXT_PUBLIC_S3_URL}/${
+              process.env.BUCKET_KEY_PREFIX || ""
+            }${fileName}`,
+          },
+          color: 5763719, // Green https://gist.github.com/thomasbnt/b6f455e2c7d743b796917fa3c205f812
+        },
+      ],
+    },
+  });
 }

@@ -19,7 +19,7 @@ export default function FileViewer({ fileObject }: props) {
           <meta property="og:type" content="website" />
           <meta
             property="og:image"
-            content={`${process.env.NEXT_PUBLIC_S3_PUBLIC_URL}/${fileObject.Key}`}
+            content={`${process.env.NEXT_PUBLIC_S3_URL}/${fileObject.Key}`}
           />
           <meta name="twitter:card" content="summary_large_image" />
         </>
@@ -27,7 +27,7 @@ export default function FileViewer({ fileObject }: props) {
       <div className="h-screen w-full flex items-center justify-center">
         <div className="shadow-2xl rounded-lg bg-gray-900 p-5 min-w-[500px]">
           <img
-            src={`${process.env.NEXT_PUBLIC_S3_PUBLIC_URL}/${fileObject.Key}`}
+            src={`${process.env.NEXT_PUBLIC_S3_URL}/${fileObject.Key}`}
             alt="Uploaded image"
             className="rounded-md w-full"
           />
