@@ -21,7 +21,7 @@ export default async function handler(
   const [fields, files] = await form.parse(req);
 
   const password = fields["password"].toString();
-  if (!password || password == process.env.PASSWORD) {
+  if (!password || password != process.env.UPLOAD_PASSWORD) {
     res.status(400).json({ success: false, error: "Invalid password" });
     return;
   }
